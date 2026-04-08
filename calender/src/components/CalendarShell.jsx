@@ -251,7 +251,7 @@ const CalendarShell = () => {
           date={modalDate}
           events={eventsHook.getEvents(modalDate)}
           accentColor={accentColor}
-          darkMode={darkMode}
+
           onAdd={eventsHook.addEvent}
           onRemove={eventsHook.removeEvent}
           onClose={() => setModalDate(null)}
