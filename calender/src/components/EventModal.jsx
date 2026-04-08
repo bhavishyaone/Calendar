@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 
-const EventModal = ({ date, events, accentColor, darkMode, onAdd, onRemove, onClose }) => {
+const EventModal = ({ date, events, accentColor, onAdd, onRemove, onClose }) => {
   const [input, setInput] = useState('');
   const inputRef = useRef(null);
 
@@ -18,12 +18,12 @@ const EventModal = ({ date, events, accentColor, darkMode, onAdd, onRemove, onCl
     }
   };
 
-  const cardBg   = darkMode ? '#1c1c1e' : '#ffffff';
-  const itemBg   = darkMode ? '#111111' : '#f5f5f5';
-  const textMain = darkMode ? '#e5e5e5' : '#333333';
-  const textSub  = darkMode ? '#aaaaaa' : '#666666';
-  const inputBg  = darkMode ? '#0f0f0f' : '#f9f9f9';
-  const borderC  = darkMode ? '#2a2a2a' : '#eeeeee';
+  const cardBg   = '#ffffff';
+  const itemBg   = '#f5f5f5';
+  const textMain = '#333333';
+  const textSub  = '#666666';
+  const inputBg  = '#f9f9f9';
+  const borderC  = '#eeeeee';
 
   return (
     <div

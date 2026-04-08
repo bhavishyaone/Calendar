@@ -7,7 +7,6 @@ const CalendarGrid = ({
   month,
   year,
   accentColor = '#1AABE8',
-  darkMode = false,
   isStart      = () => false,
   isEnd        = () => false,
   isInRange    = () => false,
@@ -30,9 +29,9 @@ const CalendarGrid = ({
 
   const accentAlpha = accentColor + '28';
   const accentMid   = accentColor + '55';
-  const textPrimary  = darkMode ? '#e5e5e5' : '#333333';
-  const textOverflow = darkMode ? '#3a3a3a' : '#cccccc';
-  const hoverBg      = darkMode ? '#2e2e2e' : '#f0f4f8';
+  const textPrimary  = '#333333';
+  const textOverflow = '#cccccc';
+  const hoverBg      = '#f0f4f8';
 
   const handleKeyDown = (e) => {
     if (focusedIdx === null && e.key === 'Tab') return;
@@ -94,7 +93,7 @@ const CalendarGrid = ({
             style={{
               fontSize: '0.68rem',
               letterSpacing: '0.05em',
-              color: i >= 5 ? accentColor : (darkMode ? '#aaaaaa' : '#444444'),
+              color: i >= 5 ? accentColor : '#444444',
               paddingBottom: '6px',
             }}
           >

@@ -76,34 +76,6 @@ const NavButton = ({ direction, onClick, label, accentColor }) => (
   </button>
 );
 
-const DarkModeToggle = ({ darkMode, onToggle, accentColor }) => (
-  <button
-    onClick={onToggle}
-    aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-    className="nav-btn flex items-center justify-center rounded-full"
-    style={{
-      width: '36px',
-      height: '36px',
-      minWidth: '36px',
-      background: darkMode ? accentColor : 'transparent',
-      border: `1.5px solid ${darkMode ? accentColor : 'var(--border-light)'}`,
-      cursor: 'pointer',
-      color: darkMode ? '#fff' : 'var(--text-secondary)',
-      transition: 'background 0.2s, border-color 0.2s, color 0.2s',
-    }}
-  >
-    {darkMode ? (
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-        <circle cx="12" cy="12" r="5" stroke="currentColor" strokeWidth="2" />
-        <path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      </svg>
-    ) : (
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    )}
-  </button>
-);
 
 const FadeTransition = ({ trigger, children }) => {
   const [visible, setVisible] = useState(true);
@@ -141,7 +113,7 @@ const CalendarShell = () => {
   const [modalDate, setModalDate] = useState(null);
 
   const range = useRangeSelector();
-  const { darkMode, toggleDarkMode, accentColor } = useTheme(month);
+  const { accentColor } = useTheme(month);
   const eventsHook = useEvents();
   const { currentNote, setNote, maxChars } = useNotes(month, year);
 
@@ -166,7 +138,7 @@ const CalendarShell = () => {
   }, []);
 
   const monthKey = `${year}-${month}`;
-  const bindingBg = darkMode ? '#111111' : '#2a2a2a';
+  const bindingBg = '#2a2a2a';
   const isCurrentMonth = month === now.getMonth() && year === now.getFullYear();
 
   const handleEscape = useCallback(() => {
@@ -192,9 +164,7 @@ const CalendarShell = () => {
           style={{
             marginTop: '36px',
             borderRadius: '4px',
-            boxShadow: darkMode
-              ? '0 20px 60px rgba(0,0,0,0.6), 0 4px 12px rgba(0,0,0,0.4)'
-              : '0 20px 60px rgba(0,0,0,0.25), 0 4px 12px rgba(0,0,0,0.15)',
+            boxShadow: '0 20px 60px rgba(0,0,0,0.25), 0 4px 12px rgba(0,0,0,0.15)',
             overflow: 'hidden',
             background: 'var(--bg-card)',
             transition: 'background 0.3s ease, box-shadow 0.3s ease',
@@ -246,7 +216,7 @@ const CalendarShell = () => {
                       TODAY
                     </button>
                   )}
-                  <DarkModeToggle darkMode={darkMode} onToggle={toggleDarkMode} accentColor={accentColor} />
+
                 </div>
                 <NavButton direction="next" onClick={goToNext} label="Next month" accentColor={accentColor} />
               </div>
@@ -255,7 +225,7 @@ const CalendarShell = () => {
                   month={month}
                   year={year}
                   accentColor={accentColor}
-                  darkMode={darkMode}
+
                   isStart={range.isStart}
                   isEnd={range.isEnd}
                   isInRange={range.isInRange}
