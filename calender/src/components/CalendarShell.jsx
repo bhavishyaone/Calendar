@@ -1,20 +1,17 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
+import useRangeSelector from '../hooks/useRangeSelector';
 import HeroImage from './HeroImage';
 import CalendarGrid from './CalendarGrid';
 
-// ── Spiral Binding Bar ────────────────────────────────────────────────────────
 const SpiralBinding = () => (
   <div className="relative w-full flex items-center justify-center"
     style={{ height: '36px', background: '#2a2a2a', zIndex: 10 }}>
-    {/* Hook at center */}
     <div className="absolute flex items-start justify-center w-full" style={{ top: '-18px', zIndex: 20 }}>
       <svg width="28" height="38" viewBox="0 0 28 38" fill="none" xmlns="http://www.w3.org/2000/svg">
         <circle cx="14" cy="5" r="5" fill="#888" stroke="#555" strokeWidth="1.5" />
         <path d="M14 10 Q14 30 6 34" stroke="#666" strokeWidth="2.5" fill="none" strokeLinecap="round" />
       </svg>
     </div>
-
-    {/* Coil rings */}
     <div className="flex items-center justify-center gap-[7px] px-6 w-full">
       {Array.from({ length: 22 }).map((_, i) => (
         <div
@@ -35,7 +32,6 @@ const SpiralBinding = () => (
   </div>
 );
 
-// ── Nav Arrow Button ──────────────────────────────────────────────────────────
 const NavButton = ({ direction, onClick, label }) => (
   <button
     onClick={onClick}
@@ -73,14 +69,12 @@ const NavButton = ({ direction, onClick, label }) => (
   </button>
 );
 
-// ── Transition wrapper — fades content on month change ─────────────────────────
 const FadeTransition = ({ trigger, children }) => {
   const [visible, setVisible] = useState(true);
   const prevTrigger = useRef(trigger);
 
   useEffect(() => {
     if (prevTrigger.current !== trigger) {
-      // Fade out → swap content → fade in
       setVisible(false);
       const t = setTimeout(() => {
         setVisible(true);
@@ -103,11 +97,11 @@ const FadeTransition = ({ trigger, children }) => {
   );
 };
 
-// ── Main CalendarShell ────────────────────────────────────────────────────────
 const CalendarShell = () => {
   const now = new Date();
   const [month, setMonth] = useState(now.getMonth());
   const [year, setYear] = useState(now.getFullYear());
+  const range = useRangeSelector();
 
   const goToPrev = useCallback(() => {
     setMonth(m => {
@@ -123,15 +117,11 @@ const CalendarShell = () => {
     });
   }, []);
 
-  // Unique key for the current month/year — drives fade transition
   const monthKey = `${year}-${month}`;
 
   return (
-    // Page background (wall)
     <div className="min-h-screen flex items-center justify-center py-12"
       style={{ background: '#e8e8e8' }}>
-
-      {/* Wall Calendar Card — portrait */}
       <div
         className="relative bg-white flex flex-col"
         style={{
@@ -141,22 +131,17 @@ const CalendarShell = () => {
           overflow: 'visible',
         }}
       >
-        {/* Spiral Binding */}
         <div style={{ marginTop: '18px' }}>
           <SpiralBinding />
         </div>
 
-        {/* Hero Section — fades on month change */}
         <div style={{ overflow: 'hidden' }}>
           <FadeTransition trigger={monthKey}>
             <HeroImage month={month} year={year} />
           </FadeTransition>
         </div>
 
-        {/* ── Bottom Section ── */}
         <div className="flex" style={{ padding: '20px 24px 28px 24px', gap: '20px', minHeight: '260px' }}>
-
-          {/* Notes Panel */}
           <div style={{ width: '160px', flexShrink: 0 }}>
             <p className="font-semibold text-zinc-700 mb-3" style={{ fontSize: '0.82rem' }}>Notes</p>
             <div className="flex flex-col gap-[10px]">
@@ -169,20 +154,28 @@ const CalendarShell = () => {
             </div>
           </div>
 
-          {/* Right: Nav Buttons + Calendar Grid — fades on month change */}
           <div className="flex-1 flex flex-col" style={{ minWidth: 0 }}>
-            {/* Navigation Row */}
             <div className="flex items-center justify-between mb-3">
               <NavButton direction="prev" onClick={goToPrev} label="Previous month" />
               <NavButton direction="next" onClick={goToNext} label="Next month" />
             </div>
 
-            {/* Calendar Grid */}
             <FadeTransition trigger={monthKey}>
-              <CalendarGrid month={month} year={year} />
+              <CalendarGrid
+                month={month}
+                year={year}
+                isStart={range.isStart}
+                isEnd={range.isEnd}
+                isInRange={range.isInRange}
+                isHoverRange={range.isHoverRange}
+                isHoverStart={range.isHoverStart}
+                isHoverEnd={range.isHoverEnd}
+                onDayClick={range.handleDayClick}
+                onDayHover={range.handleDayHover}
+                onDayLeave={range.handleDayLeave}
+              />
             </FadeTransition>
           </div>
-
         </div>
       </div>
     </div>
