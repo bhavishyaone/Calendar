@@ -1,7 +1,7 @@
 import { useRef } from 'react';
 import useNotes from '../hooks/useNotes';
 
-const NotesPanel = ({ month, year }) => {
+const NotesPanel = ({ month, year, accentColor = '#1AABE8' }) => {
   const { currentNote, setNote, maxChars } = useNotes(month, year);
   const textareaRef = useRef(null);
   const remaining = maxChars - currentNote.length;
@@ -10,7 +10,10 @@ const NotesPanel = ({ month, year }) => {
 
   return (
     <div style={{ width: '150px', flexShrink: 0, display: 'flex', flexDirection: 'column' }}>
-      <p className="font-semibold text-zinc-700 mb-2" style={{ fontSize: '0.82rem' }}>
+      <p
+        className="font-semibold mb-2"
+        style={{ fontSize: '0.82rem', color: 'var(--notes-label)' }}
+      >
         Notes
       </p>
 
@@ -27,7 +30,7 @@ const NotesPanel = ({ month, year }) => {
           outline: 'none',
           fontSize: '0.75rem',
           lineHeight: '1.8',
-          color: '#444',
+          color: 'var(--notes-text)',
           background: 'transparent',
           fontFamily: 'inherit',
           width: '100%',
@@ -36,11 +39,12 @@ const NotesPanel = ({ month, year }) => {
             to bottom,
             transparent,
             transparent calc(1.8em - 1px),
-            #d0d0d0 calc(1.8em - 1px),
-            #d0d0d0 1.8em
+            var(--notes-line) calc(1.8em - 1px),
+            var(--notes-line) 1.8em
           )`,
           backgroundAttachment: 'local',
           minHeight: '120px',
+          caretColor: accentColor,
         }}
       />
 
@@ -48,7 +52,7 @@ const NotesPanel = ({ month, year }) => {
         className="flex justify-end mt-1"
         style={{
           fontSize: '0.65rem',
-          color: isAtLimit ? '#e53e3e' : isNearLimit ? '#d97706' : '#aaa',
+          color: isAtLimit ? '#e53e3e' : isNearLimit ? '#d97706' : 'var(--text-muted)',
         }}
       >
         {remaining}/{maxChars}

@@ -1,13 +1,14 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import useRangeSelector from '../hooks/useRangeSelector';
+import useTheme from '../hooks/useTheme';
 import HeroImage from './HeroImage';
 import CalendarGrid from './CalendarGrid';
 import NotesPanel from './NotesPanel';
 
-const SpiralBinding = () => (
+const SpiralBinding = ({ bindingBg }) => (
   <div
     className="relative w-full flex items-center justify-center"
-    style={{ height: '36px', background: '#2a2a2a', zIndex: 10 }}
+    style={{ height: '36px', background: bindingBg, zIndex: 10 }}
   >
     <div className="absolute flex items-start justify-center w-full" style={{ top: '-18px', zIndex: 20 }}>
       <svg width="28" height="38" viewBox="0 0 28 38" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -34,7 +35,7 @@ const SpiralBinding = () => (
   </div>
 );
 
-const NavButton = ({ direction, onClick, label }) => (
+const NavButton = ({ direction, onClick, label, accentColor }) => (
   <button
     onClick={onClick}
     aria-label={label}
@@ -44,19 +45,19 @@ const NavButton = ({ direction, onClick, label }) => (
       height: '36px',
       minWidth: '36px',
       background: 'transparent',
-      border: '1.5px solid #ddd',
+      border: '1.5px solid var(--border-light)',
       cursor: 'pointer',
-      color: '#555',
+      color: 'var(--text-secondary)',
     }}
     onMouseEnter={e => {
-      e.currentTarget.style.background = '#1AABE8';
-      e.currentTarget.style.borderColor = '#1AABE8';
+      e.currentTarget.style.background = accentColor;
+      e.currentTarget.style.borderColor = accentColor;
       e.currentTarget.style.color = '#fff';
     }}
     onMouseLeave={e => {
       e.currentTarget.style.background = 'transparent';
-      e.currentTarget.style.borderColor = '#ddd';
-      e.currentTarget.style.color = '#555';
+      e.currentTarget.style.borderColor = 'var(--border-light)';
+      e.currentTarget.style.color = 'var(--text-secondary)';
     }}
   >
     {direction === 'prev' ? (
@@ -66,6 +67,36 @@ const NavButton = ({ direction, onClick, label }) => (
     ) : (
       <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
         <path d="M5 2L10 7L5 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    )}
+  </button>
+);
+
+const DarkModeToggle = ({ darkMode, onToggle, accentColor }) => (
+  <button
+    onClick={onToggle}
+    aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+    title={darkMode ? 'Light mode' : 'Dark mode'}
+    className="nav-btn flex items-center justify-center rounded-full"
+    style={{
+      width: '36px',
+      height: '36px',
+      minWidth: '36px',
+      background: darkMode ? accentColor : 'transparent',
+      border: `1.5px solid ${darkMode ? accentColor : 'var(--border-light)'}`,
+      cursor: 'pointer',
+      color: darkMode ? '#fff' : 'var(--text-secondary)',
+      transition: 'background 0.2s, border-color 0.2s, color 0.2s',
+    }}
+  >
+    {darkMode ? (
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="5" stroke="currentColor" strokeWidth="2" />
+        <path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      </svg>
+    ) : (
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
     )}
   </button>
@@ -103,7 +134,9 @@ const CalendarShell = () => {
   const now = new Date();
   const [month, setMonth] = useState(now.getMonth());
   const [year, setYear] = useState(now.getFullYear());
+
   const range = useRangeSelector();
+  const { darkMode, toggleDarkMode, accentColor } = useTheme(month);
 
   const goToPrev = useCallback(() => {
     setMonth(m => {
@@ -120,34 +153,36 @@ const CalendarShell = () => {
   }, []);
 
   const monthKey = `${year}-${month}`;
+  const bindingBg = darkMode ? '#111111' : '#2a2a2a';
 
   return (
     <div
       className="min-h-screen flex items-start sm:items-center justify-center py-12 px-3 sm:px-4"
-      style={{ background: '#e8e8e8' }}
+      style={{ background: 'var(--bg-wall)', transition: 'background 0.3s ease' }}
     >
-      {/* Outer wrapper: overflow visible so the hook above the card is visible */}
       <div
         className="relative w-full"
         style={{ maxWidth: '520px', paddingTop: '20px' }}
       >
-        {/* Spiral binding — absolutely positioned above the card */}
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 10 }}>
-          <SpiralBinding />
+          <SpiralBinding bindingBg={bindingBg} />
         </div>
 
-        {/* Card body — overflow hidden so nothing escapes the card boundaries */}
         <div
-          className="bg-white flex flex-col"
+          className="flex flex-col"
           style={{
             marginTop: '36px',
             borderRadius: '4px',
-            boxShadow: '0 20px 60px rgba(0,0,0,0.25), 0 4px 12px rgba(0,0,0,0.15)',
+            boxShadow: darkMode
+              ? '0 20px 60px rgba(0,0,0,0.6), 0 4px 12px rgba(0,0,0,0.4)'
+              : '0 20px 60px rgba(0,0,0,0.25), 0 4px 12px rgba(0,0,0,0.15)',
             overflow: 'hidden',
+            background: 'var(--bg-card)',
+            transition: 'background 0.3s ease, box-shadow 0.3s ease',
           }}
         >
           <FadeTransition trigger={monthKey}>
-            <HeroImage month={month} year={year} />
+            <HeroImage month={month} year={year} accentColor={accentColor} />
           </FadeTransition>
 
           <div
@@ -158,18 +193,21 @@ const CalendarShell = () => {
               minHeight: '260px',
             }}
           >
-            <NotesPanel month={month} year={year} />
+            <NotesPanel month={month} year={year} accentColor={accentColor} />
 
             <div className="flex-1 flex flex-col" style={{ minWidth: 0 }}>
               <div className="flex items-center justify-between mb-3">
-                <NavButton direction="prev" onClick={goToPrev} label="Previous month" />
-                <NavButton direction="next" onClick={goToNext} label="Next month" />
+                <NavButton direction="prev" onClick={goToPrev} label="Previous month" accentColor={accentColor} />
+                <DarkModeToggle darkMode={darkMode} onToggle={toggleDarkMode} accentColor={accentColor} />
+                <NavButton direction="next" onClick={goToNext} label="Next month" accentColor={accentColor} />
               </div>
 
               <FadeTransition trigger={monthKey}>
                 <CalendarGrid
                   month={month}
                   year={year}
+                  accentColor={accentColor}
+                  darkMode={darkMode}
                   isStart={range.isStart}
                   isEnd={range.isEnd}
                   isInRange={range.isInRange}

@@ -19,10 +19,13 @@ const MONTH_PHOTOS = [
   'https://images.unsplash.com/photo-1418985991508-e47386d96a71?w=900&q=80',
 ];
 
-const HeroImage = ({ month = new Date().getMonth(), year = new Date().getFullYear() }) => {
+const HeroImage = ({
+  month = new Date().getMonth(),
+  year = new Date().getFullYear(),
+  accentColor = '#1AABE8',
+}) => {
   const photoUrl = MONTH_PHOTOS[month];
   const monthName = MONTHS[month].toUpperCase();
-  const blue = '#1AABE8';
 
   return (
     <div className="relative w-full" style={{ height: 'clamp(200px, 38vw, 320px)', overflow: 'hidden' }}>
@@ -40,7 +43,7 @@ const HeroImage = ({ month = new Date().getMonth(), year = new Date().getFullYea
       >
         <path
           d="M0,110 L0,50 L220,110 L380,18 L550,110 L1000,30 L1000,110 Z"
-          fill={blue}
+          fill={accentColor}
         />
       </svg>
 
