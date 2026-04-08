@@ -7,7 +7,6 @@ import HeroImage from './HeroImage';
 import CalendarGrid from './CalendarGrid';
 import NotesPanel from './NotesPanel';
 import EventModal from './EventModal';
-import MonthProgress from './MonthProgress';
 
 
 const SpiralBinding = ({ bindingBg }) => (
@@ -251,9 +250,6 @@ const CalendarShell = () => {
                 </div>
                 <NavButton direction="next" onClick={goToNext} label="Next month" accentColor={accentColor} />
               </div>
-
-              <MonthProgress month={month} year={year} accentColor={accentColor} darkMode={darkMode} />
-
               <FadeTransition trigger={monthKey}>
                 <CalendarGrid
                   month={month}
