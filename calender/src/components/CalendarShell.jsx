@@ -9,33 +9,36 @@ import NotesPanel from './NotesPanel';
 import EventModal from './EventModal';
 
 
-const SpiralBinding = ({ bindingBg }) => (
+const TwinLoop = () => (
+  <svg width="14" height="26" viewBox="0 0 14 26" className="flex-shrink-0 block">
+    <rect x="2" y="16" width="10" height="5" rx="2" fill="#151515" />
+    {/* Left loop */}
+    <path d="M 4 18 L 4 6 Q 4 1 7 1 Q 11 1 11 8 L 11 18" fill="none" stroke="#2a2a2a" strokeWidth="1.5" />
+    <path d="M 4 18 L 4 6 Q 4 1 7 1 Q 11 1 11 8 L 11 18" fill="none" stroke="#888888" strokeWidth="0.5" />
+    {/* Right loop */}
+    <path d="M 7 18 L 7 6 Q 7 1 10 1 Q 14 1 14 8 L 14 18" fill="none" stroke="#111111" strokeWidth="1.2" />
+  </svg>
+);
+
+const CenterHanger = () => (
+  <svg width="34" height="42" viewBox="0 0 34 42" className="flex-shrink-0 block">
+    <rect x="2" y="32" width="10" height="5" rx="2" fill="#151515" />
+    <rect x="22" y="32" width="10" height="5" rx="2" fill="#151515" />
+    {/* Hanger wire extending up */}
+    <path d="M 7 34 L 7 24 L 14 14 C 14 8, 14 3, 17 3 C 20 3, 20 8, 20 14 L 27 24 L 27 34" fill="none" stroke="#2a2a2a" strokeWidth="2.5" strokeLinejoin="round" />
+    {/* Hanger wire highlight */}
+    <path d="M 7 34 L 7 24 L 14 14 C 14 8, 14 3, 17 3 C 20 3, 20 8, 20 14 L 27 24 L 27 34" fill="none" stroke="#888888" strokeWidth="1" strokeLinejoin="round" />
+  </svg>
+);
+
+const SpiralBinding = () => (
   <div
-    className="relative w-full flex items-center justify-center"
-    style={{ height: '36px', background: bindingBg, zIndex: 10 }}
+    className="absolute w-full flex items-end justify-center pointer-events-none overflow-hidden"
+    style={{ top: '-30px', left: 0, zIndex: 10, gap: 'min(1vw, 6px)' }}
   >
-    <div className="absolute flex items-start justify-center w-full" style={{ top: '-18px', zIndex: 20 }}>
-      <svg width="28" height="38" viewBox="0 0 28 38" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="14" cy="5" r="5" fill="#888" stroke="#555" strokeWidth="1.5" />
-        <path d="M14 10 Q14 30 6 34" stroke="#666" strokeWidth="2.5" fill="none" strokeLinecap="round" />
-      </svg>
-    </div>
-    <div className="flex items-center justify-center gap-[5px] sm:gap-[7px] px-4 sm:px-6 w-full overflow-hidden">
-      {Array.from({ length: 22 }).map((_, i) => (
-        <div
-          key={i}
-          style={{
-            width: '10px',
-            height: '18px',
-            borderRadius: '50%',
-            background: 'linear-gradient(135deg, #d0d0d0 0%, #888 40%, #aaa 60%, #ccc 100%)',
-            border: '1.5px solid #555',
-            flexShrink: 0,
-          }}
-          aria-hidden="true"
-        />
-      ))}
-    </div>
+    {Array.from({ length: 12 }).map((_, i) => <TwinLoop key={`l-${i}`} />)}
+    <CenterHanger />
+    {Array.from({ length: 12 }).map((_, i) => <TwinLoop key={`r-${i}`} />)}
   </div>
 );
 
@@ -157,16 +160,15 @@ const CalendarShell = () => {
     >
       <div
         className="relative w-full"
-        style={{ maxWidth: '520px', paddingTop: '20px' }}
+        style={{ maxWidth: '520px', marginTop: '36px' }}
       >
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 10 }}>
-          <SpiralBinding bindingBg={bindingBg} />
+          <SpiralBinding />
         </div>
 
         <div
           className="flex flex-col"
           style={{
-            marginTop: '36px',
             borderRadius: '4px',
             boxShadow: '0 20px 60px rgba(0,0,0,0.25), 0 4px 12px rgba(0,0,0,0.15)',
             overflow: 'hidden',
