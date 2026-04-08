@@ -1,4 +1,5 @@
 import HeroImage from './HeroImage';
+import CalendarGrid from './CalendarGrid';
 
 // ── Spiral Binding Bar ────────────────────────────────────────────────────────
 const SpiralBinding = () => (
@@ -86,12 +87,8 @@ const CalendarShell = () => {
             </div>
           </div>
 
-          {/* Calendar Grid Placeholder */}
-          <div className="flex-1 flex items-center justify-center">
-            <span className="text-zinc-300 text-sm font-medium tracking-wide">
-              📅 Calendar Grid — Phase 4
-            </span>
-          </div>
+          {/* Calendar Grid */}
+          <CalendarGrid month={currentMonth} year={currentYear} />
 
         </div>
       </div>
