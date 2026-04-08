@@ -16,9 +16,12 @@ const useNotes = (month, year) => {
   });
 
   useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
-    } catch {}
+    const t = setTimeout(() => {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
+      } catch {}
+    }, 500);
+    return () => clearTimeout(t);
   }, [notes]);
 
   const currentNote = notes[key] || '';

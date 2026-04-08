@@ -26,6 +26,7 @@ const CalendarGrid = ({
   const [focusedIdx, setFocusedIdx] = useState(null);
   const gridRef = useRef(null);
   const usingKeyboard = useRef(false);
+  const clickTimeout = useRef(null);
 
   const accentAlpha = accentColor + '28';
   const accentMid   = accentColor + '55';
@@ -56,9 +57,24 @@ const CalendarGrid = ({
     usingKeyboard.current = true;
   };
 
+  const handleCellClick = (cell) => {
+    if (!cell.isCurrentMonth) return;
+    if (clickTimeout.current) clearTimeout(clickTimeout.current);
+    clickTimeout.current = setTimeout(() => {
+      onDayClick(cell.date);
+    }, 200);
+  };
+
+  const handleCellDoubleClick = (cell) => {
+    if (!cell.isCurrentMonth) return;
+    if (clickTimeout.current) clearTimeout(clickTimeout.current);
+    onDayDoubleClick(cell.date);
+  };
+
   return (
     <div
       ref={gridRef}
+      role="grid"
       className="flex-1 select-none outline-none"
       style={{ minWidth: 0 }}
       tabIndex={0}
@@ -68,6 +84,7 @@ const CalendarGrid = ({
       onBlur={() => { setFocusedIdx(null); usingKeyboard.current = false; }}
       onMouseLeave={() => { setHoveredIdx(null); onDayLeave(); }}
       aria-label="Calendar grid"
+      aria-activedescendant={focusedIdx !== null && days[focusedIdx] ? `cell-${days[focusedIdx].date.getTime()}` : undefined}
     >
       <div className="grid mb-2" style={{ gridTemplateColumns: 'repeat(7, 1fr)', gap: '2px' }}>
         {WEEKDAYS.map((day, i) => (
@@ -121,7 +138,9 @@ const CalendarGrid = ({
 
           return (
             <div
-              key={idx}
+              key={cell.date.getTime()}
+              id={`cell-${cell.date.getTime()}`}
+              role="gridcell"
               className="flex flex-col items-center justify-center relative"
               style={{
                 aspectRatio: '1 / 1',
@@ -136,8 +155,8 @@ const CalendarGrid = ({
                 outline: isFocused ? `2px solid ${accentColor}` : 'none',
                 outlineOffset: '-2px',
               }}
-              onClick={() => { if (!cell.isCurrentMonth) return; onDayClick(cell.date); }}
-              onDoubleClick={() => { if (!cell.isCurrentMonth) return; onDayDoubleClick(cell.date); }}
+              onClick={() => handleCellClick(cell)}
+              onDoubleClick={() => handleCellDoubleClick(cell)}
               onMouseEnter={() => {
                 setHoveredIdx(idx);
                 if (cell.isCurrentMonth) onDayHover(cell.date);
