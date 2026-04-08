@@ -1,9 +1,14 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import useRangeSelector from '../hooks/useRangeSelector';
 import useTheme from '../hooks/useTheme';
+import useEvents from '../hooks/useEvents';
+import useNotes from '../hooks/useNotes';
 import HeroImage from './HeroImage';
 import CalendarGrid from './CalendarGrid';
 import NotesPanel from './NotesPanel';
+import EventModal from './EventModal';
+import MonthProgress from './MonthProgress';
+
 
 const SpiralBinding = ({ bindingBg }) => (
   <div
@@ -76,7 +81,6 @@ const DarkModeToggle = ({ darkMode, onToggle, accentColor }) => (
   <button
     onClick={onToggle}
     aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-    title={darkMode ? 'Light mode' : 'Dark mode'}
     className="nav-btn flex items-center justify-center rounded-full"
     style={{
       width: '36px',
@@ -130,13 +134,17 @@ const FadeTransition = ({ trigger, children }) => {
   );
 };
 
+
 const CalendarShell = () => {
   const now = new Date();
   const [month, setMonth] = useState(now.getMonth());
   const [year, setYear] = useState(now.getFullYear());
+  const [modalDate, setModalDate] = useState(null);
 
   const range = useRangeSelector();
   const { darkMode, toggleDarkMode, accentColor } = useTheme(month);
+  const eventsHook = useEvents();
+  const { currentNote, setNote, maxChars } = useNotes(month, year);
 
   const goToPrev = useCallback(() => {
     setMonth(m => {
@@ -152,8 +160,20 @@ const CalendarShell = () => {
     });
   }, []);
 
+  const goToToday = useCallback(() => {
+    const t = new Date();
+    setMonth(t.getMonth());
+    setYear(t.getFullYear());
+  }, []);
+
   const monthKey = `${year}-${month}`;
   const bindingBg = darkMode ? '#111111' : '#2a2a2a';
+  const isCurrentMonth = month === now.getMonth() && year === now.getFullYear();
+
+  const handleEscape = useCallback(() => {
+    range.reset();
+    setModalDate(null);
+  }, [range]);
 
   return (
     <div
@@ -188,19 +208,51 @@ const CalendarShell = () => {
           <div
             className="flex flex-col sm:flex-row"
             style={{
-              padding: 'clamp(14px, 4vw, 20px) clamp(14px, 5vw, 24px) clamp(18px, 5vw, 28px)',
+              padding: 'clamp(14px, 4vw, 20px) clamp(14px, 5vw, 24px) clamp(18px, 5vw, 24px)',
               gap: 'clamp(12px, 4vw, 20px)',
               minHeight: '260px',
             }}
           >
-            <NotesPanel month={month} year={year} accentColor={accentColor} />
+            <NotesPanel
+              currentNote={currentNote}
+              setNote={setNote}
+              maxChars={maxChars}
+              accentColor={accentColor}
+            />
 
             <div className="flex-1 flex flex-col" style={{ minWidth: 0 }}>
               <div className="flex items-center justify-between mb-3">
                 <NavButton direction="prev" onClick={goToPrev} label="Previous month" accentColor={accentColor} />
-                <DarkModeToggle darkMode={darkMode} onToggle={toggleDarkMode} accentColor={accentColor} />
+                <div className="flex items-center gap-1">
+                  {!isCurrentMonth && (
+                    <button
+                      onClick={goToToday}
+                      aria-label="Go to today"
+                      title="Today"
+                      style={{
+                        fontSize: '0.62rem',
+                        fontWeight: 700,
+                        padding: '4px 8px',
+                        borderRadius: '6px',
+                        border: `1.5px solid ${accentColor}`,
+                        background: 'transparent',
+                        color: accentColor,
+                        cursor: 'pointer',
+                        letterSpacing: '0.04em',
+                        transition: 'background 0.15s, color 0.15s',
+                      }}
+                      onMouseEnter={e => { e.currentTarget.style.background = accentColor; e.currentTarget.style.color = '#fff'; }}
+                      onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = accentColor; }}
+                    >
+                      TODAY
+                    </button>
+                  )}
+                  <DarkModeToggle darkMode={darkMode} onToggle={toggleDarkMode} accentColor={accentColor} />
+                </div>
                 <NavButton direction="next" onClick={goToNext} label="Next month" accentColor={accentColor} />
               </div>
+
+              <MonthProgress month={month} year={year} accentColor={accentColor} darkMode={darkMode} />
 
               <FadeTransition trigger={monthKey}>
                 <CalendarGrid
@@ -214,15 +266,31 @@ const CalendarShell = () => {
                   isHoverRange={range.isHoverRange}
                   isHoverStart={range.isHoverStart}
                   isHoverEnd={range.isHoverEnd}
+                  hasEvents={eventsHook.hasEvents}
                   onDayClick={range.handleDayClick}
                   onDayHover={range.handleDayHover}
                   onDayLeave={range.handleDayLeave}
+                  onDayDoubleClick={(date) => setModalDate(date)}
+                  onEscape={handleEscape}
                 />
               </FadeTransition>
             </div>
           </div>
+
         </div>
       </div>
+
+      {modalDate && (
+        <EventModal
+          date={modalDate}
+          events={eventsHook.getEvents(modalDate)}
+          accentColor={accentColor}
+          darkMode={darkMode}
+          onAdd={eventsHook.addEvent}
+          onRemove={eventsHook.removeEvent}
+          onClose={() => setModalDate(null)}
+        />
+      )}
     </div>
   );
 };

@@ -1,8 +1,6 @@
 import { useRef } from 'react';
-import useNotes from '../hooks/useNotes';
 
-const NotesPanel = ({ month, year, accentColor = '#1AABE8' }) => {
-  const { currentNote, setNote, maxChars } = useNotes(month, year);
+const NotesPanel = ({ currentNote, setNote, maxChars, accentColor }) => {
   const textareaRef = useRef(null);
   const remaining = maxChars - currentNote.length;
   const isNearLimit = remaining <= 40;
@@ -10,10 +8,7 @@ const NotesPanel = ({ month, year, accentColor = '#1AABE8' }) => {
 
   return (
     <div style={{ width: '150px', flexShrink: 0, display: 'flex', flexDirection: 'column' }}>
-      <p
-        className="font-semibold mb-2"
-        style={{ fontSize: '0.82rem', color: 'var(--notes-label)' }}
-      >
+      <p className="font-semibold mb-2" style={{ fontSize: '0.82rem', color: 'var(--notes-label)' }}>
         Notes
       </p>
 

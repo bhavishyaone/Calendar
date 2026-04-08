@@ -39,6 +39,13 @@ const useRangeSelector = () => {
     setHoverDate(null);
   }, []);
 
+  const reset = useCallback(() => {
+    setStartDate(null);
+    setEndDate(null);
+    setHoverDate(null);
+    setStep(0);
+  }, []);
+
   const sameDay = (a, b) => a && b && a.getTime() === b.getTime();
 
   const isStart = (date) => sameDay(date, startDate);
@@ -64,6 +71,7 @@ const useRangeSelector = () => {
     endDate,
     hoverDate,
     step,
+    reset,
     handleDayClick,
     handleDayHover,
     handleDayLeave,
