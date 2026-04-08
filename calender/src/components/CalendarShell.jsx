@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import useRangeSelector from '../hooks/useRangeSelector';
 import HeroImage from './HeroImage';
 import CalendarGrid from './CalendarGrid';
+import NotesPanel from './NotesPanel';
 
 const SpiralBinding = () => (
   <div className="relative w-full flex items-center justify-center"
@@ -142,17 +143,7 @@ const CalendarShell = () => {
         </div>
 
         <div className="flex" style={{ padding: '20px 24px 28px 24px', gap: '20px', minHeight: '260px' }}>
-          <div style={{ width: '160px', flexShrink: 0 }}>
-            <p className="font-semibold text-zinc-700 mb-3" style={{ fontSize: '0.82rem' }}>Notes</p>
-            <div className="flex flex-col gap-[10px]">
-              {Array.from({ length: 7 }).map((_, i) => (
-                <div
-                  key={i}
-                  style={{ width: '100%', height: '1px', background: '#c8c8c8' }}
-                />
-              ))}
-            </div>
-          </div>
+          <NotesPanel month={month} year={year} />
 
           <div className="flex-1 flex flex-col" style={{ minWidth: 0 }}>
             <div className="flex items-center justify-between mb-3">
