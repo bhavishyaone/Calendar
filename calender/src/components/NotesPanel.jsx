@@ -1,8 +1,6 @@
 import { useRef } from 'react';
 import useNotes from '../hooks/useNotes';
 
-const BLUE = '#1AABE8';
-
 const NotesPanel = ({ month, year }) => {
   const { currentNote, setNote, maxChars } = useNotes(month, year);
   const textareaRef = useRef(null);
@@ -11,11 +9,8 @@ const NotesPanel = ({ month, year }) => {
   const isAtLimit = remaining === 0;
 
   return (
-    <div style={{ width: '160px', flexShrink: 0, display: 'flex', flexDirection: 'column' }}>
-      <p
-        className="font-semibold text-zinc-700 mb-2"
-        style={{ fontSize: '0.82rem' }}
-      >
+    <div style={{ width: '150px', flexShrink: 0, display: 'flex', flexDirection: 'column' }}>
+      <p className="font-semibold text-zinc-700 mb-2" style={{ fontSize: '0.82rem' }}>
         Notes
       </p>
 
@@ -45,13 +40,16 @@ const NotesPanel = ({ month, year }) => {
             #d0d0d0 1.8em
           )`,
           backgroundAttachment: 'local',
-          minHeight: '130px',
+          minHeight: '120px',
         }}
       />
 
       <div
         className="flex justify-end mt-1"
-        style={{ fontSize: '0.65rem', color: isAtLimit ? '#e53e3e' : isNearLimit ? '#d97706' : '#aaa' }}
+        style={{
+          fontSize: '0.65rem',
+          color: isAtLimit ? '#e53e3e' : isNearLimit ? '#d97706' : '#aaa',
+        }}
       >
         {remaining}/{maxChars}
       </div>

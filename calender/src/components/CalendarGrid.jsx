@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import useCalendar from '../hooks/useCalendar';
 
 const WEEKDAYS = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
@@ -19,9 +20,14 @@ const CalendarGrid = ({
   onDayLeave   = () => {},
 }) => {
   const { days } = useCalendar(month, year);
+  const [hoveredIdx, setHoveredIdx] = useState(null);
 
   return (
-    <div className="flex-1 select-none" style={{ minWidth: 0 }} onMouseLeave={onDayLeave}>
+    <div
+      className="flex-1 select-none"
+      style={{ minWidth: 0 }}
+      onMouseLeave={() => { setHoveredIdx(null); onDayLeave(); }}
+    >
       <div className="grid mb-2" style={{ gridTemplateColumns: 'repeat(7, 1fr)', gap: '2px' }}>
         {WEEKDAYS.map((day, i) => (
           <div
@@ -54,24 +60,29 @@ const CalendarGrid = ({
           const colIndex   = idx % 7;
           const isFirstCol = colIndex === 0;
           const isLastCol  = colIndex === 6;
+          const isLocalHovered = hoveredIdx === idx && !isEndpoint && !cell.isToday && cell.isCurrentMonth;
 
           let bgColor = 'transparent';
           if (isEndpoint) bgColor = BLUE;
           else if (inRange) bgColor = BLUE_LIGHT;
           else if (hoverRng) bgColor = BLUE_MID;
           else if (cell.isToday) bgColor = BLUE;
+          else if (isLocalHovered) bgColor = '#f0f4f8';
 
           let textColor = '#333';
           if (isEndpoint || cell.isToday) textColor = '#fff';
           else if (isGray) textColor = '#ccc';
           else if (isBlueDate) textColor = BLUE;
 
+          const isActive = isEndpoint || cell.isToday;
+
           return (
             <div
               key={idx}
-              className="flex items-center justify-center relative"
+              className="cal-day-cell flex items-center justify-center relative"
               style={{
                 aspectRatio: '1 / 1',
+                minHeight: '36px',
                 background: hasRangeBg && !isEndpoint
                   ? (inRange ? BLUE_LIGHT : BLUE_MID)
                   : 'transparent',
@@ -81,14 +92,20 @@ const CalendarGrid = ({
                 borderTopRightRadius: (end || hoverEn || isLastCol) && hasRangeBg ? '50%' : 0,
                 borderBottomRightRadius: (end || hoverEn || isLastCol) && hasRangeBg ? '50%' : 0,
               }}
-              onClick={() => cell.isCurrentMonth && onDayClick(cell.date)}
-              onMouseEnter={() => cell.isCurrentMonth && onDayHover(cell.date)}
+              onClick={() => {
+                if (!cell.isCurrentMonth) return;
+                onDayClick(cell.date);
+              }}
+              onMouseEnter={() => {
+                setHoveredIdx(idx);
+                if (cell.isCurrentMonth) onDayHover(cell.date);
+              }}
             >
               <span
-                className="flex items-center justify-center font-medium z-10 relative"
+                className={`cal-day-inner${isActive ? ' active' : ''} flex items-center justify-center font-medium z-10 relative`}
                 style={{
-                  width: '28px',
-                  height: '28px',
+                  width: '32px',
+                  height: '32px',
                   borderRadius: '50%',
                   fontSize: '0.78rem',
                   cursor: cell.isCurrentMonth ? 'pointer' : 'default',
@@ -96,7 +113,8 @@ const CalendarGrid = ({
                   color: textColor,
                   fontWeight: isEndpoint || cell.isToday ? '700' : isBlueDate ? '600' : '400',
                   boxShadow: isEndpoint ? '0 2px 8px rgba(26,171,232,0.4)' : 'none',
-                  transition: 'background 0.12s, color 0.12s, box-shadow 0.12s',
+                  transform: isLocalHovered ? 'scale(1.15)' : 'scale(1)',
+                  transition: 'background 0.12s, color 0.12s, box-shadow 0.12s, transform 0.1s',
                 }}
               >
                 {cell.day}

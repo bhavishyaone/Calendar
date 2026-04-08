@@ -5,25 +5,26 @@ import CalendarGrid from './CalendarGrid';
 import NotesPanel from './NotesPanel';
 
 const SpiralBinding = () => (
-  <div className="relative w-full flex items-center justify-center"
-    style={{ height: '36px', background: '#2a2a2a', zIndex: 10 }}>
+  <div
+    className="relative w-full flex items-center justify-center"
+    style={{ height: '36px', background: '#2a2a2a', zIndex: 10 }}
+  >
     <div className="absolute flex items-start justify-center w-full" style={{ top: '-18px', zIndex: 20 }}>
       <svg width="28" height="38" viewBox="0 0 28 38" fill="none" xmlns="http://www.w3.org/2000/svg">
         <circle cx="14" cy="5" r="5" fill="#888" stroke="#555" strokeWidth="1.5" />
         <path d="M14 10 Q14 30 6 34" stroke="#666" strokeWidth="2.5" fill="none" strokeLinecap="round" />
       </svg>
     </div>
-    <div className="flex items-center justify-center gap-[7px] px-6 w-full">
+    <div className="flex items-center justify-center gap-[5px] sm:gap-[7px] px-4 sm:px-6 w-full overflow-hidden">
       {Array.from({ length: 22 }).map((_, i) => (
         <div
           key={i}
-          className="rounded-full border-2"
           style={{
-            width: '12px',
-            height: '20px',
+            width: '10px',
+            height: '18px',
             borderRadius: '50%',
             background: 'linear-gradient(135deg, #d0d0d0 0%, #888 40%, #aaa 60%, #ccc 100%)',
-            borderColor: '#555',
+            border: '1.5px solid #555',
             flexShrink: 0,
           }}
           aria-hidden="true"
@@ -37,15 +38,15 @@ const NavButton = ({ direction, onClick, label }) => (
   <button
     onClick={onClick}
     aria-label={label}
-    className="flex items-center justify-center rounded-full transition-all duration-200"
+    className="nav-btn flex items-center justify-center rounded-full"
     style={{
-      width: '32px',
-      height: '32px',
+      width: '36px',
+      height: '36px',
+      minWidth: '36px',
       background: 'transparent',
       border: '1.5px solid #ddd',
       cursor: 'pointer',
       color: '#555',
-      flexShrink: 0,
     }}
     onMouseEnter={e => {
       e.currentTarget.style.background = '#1AABE8';
@@ -121,51 +122,66 @@ const CalendarShell = () => {
   const monthKey = `${year}-${month}`;
 
   return (
-    <div className="min-h-screen flex items-center justify-center py-12"
-      style={{ background: '#e8e8e8' }}>
+    <div
+      className="min-h-screen flex items-start sm:items-center justify-center py-12 px-3 sm:px-4"
+      style={{ background: '#e8e8e8' }}
+    >
+      {/* Outer wrapper: overflow visible so the hook above the card is visible */}
       <div
-        className="relative bg-white flex flex-col"
-        style={{
-          width: '520px',
-          borderRadius: '4px',
-          boxShadow: '0 20px 60px rgba(0,0,0,0.25), 0 4px 12px rgba(0,0,0,0.15)',
-          overflow: 'visible',
-        }}
+        className="relative w-full"
+        style={{ maxWidth: '520px', paddingTop: '20px' }}
       >
-        <div style={{ marginTop: '18px' }}>
+        {/* Spiral binding — absolutely positioned above the card */}
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 10 }}>
           <SpiralBinding />
         </div>
 
-        <div style={{ overflow: 'hidden' }}>
+        {/* Card body — overflow hidden so nothing escapes the card boundaries */}
+        <div
+          className="bg-white flex flex-col"
+          style={{
+            marginTop: '36px',
+            borderRadius: '4px',
+            boxShadow: '0 20px 60px rgba(0,0,0,0.25), 0 4px 12px rgba(0,0,0,0.15)',
+            overflow: 'hidden',
+          }}
+        >
           <FadeTransition trigger={monthKey}>
             <HeroImage month={month} year={year} />
           </FadeTransition>
-        </div>
 
-        <div className="flex" style={{ padding: '20px 24px 28px 24px', gap: '20px', minHeight: '260px' }}>
-          <NotesPanel month={month} year={year} />
+          <div
+            className="flex flex-col sm:flex-row"
+            style={{
+              padding: 'clamp(14px, 4vw, 20px) clamp(14px, 5vw, 24px) clamp(18px, 5vw, 28px)',
+              gap: 'clamp(12px, 4vw, 20px)',
+              minHeight: '260px',
+            }}
+          >
+            <NotesPanel month={month} year={year} />
 
-          <div className="flex-1 flex flex-col" style={{ minWidth: 0 }}>
-            <div className="flex items-center justify-between mb-3">
-              <NavButton direction="prev" onClick={goToPrev} label="Previous month" />
-              <NavButton direction="next" onClick={goToNext} label="Next month" />
+            <div className="flex-1 flex flex-col" style={{ minWidth: 0 }}>
+              <div className="flex items-center justify-between mb-3">
+                <NavButton direction="prev" onClick={goToPrev} label="Previous month" />
+                <NavButton direction="next" onClick={goToNext} label="Next month" />
+              </div>
+
+              <FadeTransition trigger={monthKey}>
+                <CalendarGrid
+                  month={month}
+                  year={year}
+                  isStart={range.isStart}
+                  isEnd={range.isEnd}
+                  isInRange={range.isInRange}
+                  isHoverRange={range.isHoverRange}
+                  isHoverStart={range.isHoverStart}
+                  isHoverEnd={range.isHoverEnd}
+                  onDayClick={range.handleDayClick}
+                  onDayHover={range.handleDayHover}
+                  onDayLeave={range.handleDayLeave}
+                />
+              </FadeTransition>
             </div>
-
-            <FadeTransition trigger={monthKey}>
-              <CalendarGrid
-                month={month}
-                year={year}
-                isStart={range.isStart}
-                isEnd={range.isEnd}
-                isInRange={range.isInRange}
-                isHoverRange={range.isHoverRange}
-                isHoverStart={range.isHoverStart}
-                isHoverEnd={range.isHoverEnd}
-                onDayClick={range.handleDayClick}
-                onDayHover={range.handleDayHover}
-                onDayLeave={range.handleDayLeave}
-              />
-            </FadeTransition>
           </div>
         </div>
       </div>

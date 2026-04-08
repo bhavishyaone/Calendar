@@ -25,7 +25,7 @@ const HeroImage = ({ month = new Date().getMonth(), year = new Date().getFullYea
   const blue = '#1AABE8';
 
   return (
-    <div className="relative w-full" style={{ height: '320px', overflow: 'hidden' }}>
+    <div className="relative w-full" style={{ height: 'clamp(200px, 38vw, 320px)', overflow: 'hidden' }}>
       <div
         className="absolute inset-0 bg-cover bg-center"
         style={{ backgroundImage: `url(${photoUrl})` }}
